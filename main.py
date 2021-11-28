@@ -76,19 +76,15 @@ class Paint:
         self.lastX, self.lastY = x, y
 
     def select_tool(self, tool):
-        print('Tool', tool)
         self._tool = tool
 
     def select_color(self, color):
-        print('Color', color)
         self._color = color
 
     def select_width(self, width):
-        print('Width', width)
         self._width = width
 
     def select_fill(self, fill):
-        print('Fill', fill)
         self._fill = fill
 
 
@@ -246,8 +242,8 @@ class Tool:
         lbl.bind('<Button-1>', self.open_file)
         lbl.pack(padx=6, pady=3)
 
-        frame1.pack(side='left', fill='y', expand=True, pady=6)
-        frame2.pack(side='left', fill='y', expand=True, pady=6)
+        frame1.pack(side='left', fill='y', pady=6)
+        frame2.pack(side='left', fill='y', pady=6)
 
     # ----------------------------------------------------------------------
 
@@ -293,12 +289,12 @@ class Tool:
         self._curr_color = self.custom
 
     def save_file(self, event):
-        filename = filedialog.asksaveasfilename(initialdir="C:/Users/karja/Desktop",
+        filename = filedialog.asksaveasfilename(initialdir="C:/",
                                                 title="Wybierz miejsce zapisu",
                                                 filetypes=(("jpeg files", "*.jpeg"), ("png files", "*.png"),
                                                            ("gif files", "*.gif"), ("bmp files", "*.bmp")),
                                                 defaultextension="*.jpeg")
-        if filename is None:
+        if not filename:
             return
         x1 = root.winfo_x() + 91
         y1 = root.winfo_y() + 31
@@ -308,7 +304,15 @@ class Tool:
         img.save(filename)
 
     def open_file(self, event):
-        pass
+        filename = filedialog.askopenfilename(initialdir="C:/",
+                                                title="Wybierz plik",
+                                                filetypes=(("jpeg files", "*.jpeg"), ("png files", "*.png"),
+                                                           ("gif files", "*.gif"), ("bmp files", "*.bmp")))
+        img_temp = Image.open(filename)
+        img_temp.save("temp.gif", "gif")
+        self.file_to_open = PhotoImage(file = "temp.gif")
+        canvas.delete("all")
+        canvas.create_image(3, 3, image=self.file_to_open, anchor=NW)
 
     def clear_canvas(self, event):
         canvas.delete("all")
@@ -316,7 +320,6 @@ class Tool:
 
 root = Tk()
 root.geometry("900x640")
-root.resizable(width=False, height=False)
 root.title("Paint")
 
 canvas = Canvas(background='white', width=800, height=600)
