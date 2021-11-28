@@ -227,20 +227,20 @@ class Tool:
         spacer = Label(frame1)
         spacer.pack(padx=6, pady=3)
 
-        lbl = Label(frame1, relief='raised', image=self.save)
-        lbl.bind('<Button-1>', self.save_file)
-        lbl.pack(padx=6, pady=3)
+        # lbl = Label(frame1, relief='raised', image=self.save)
+        # lbl.bind('<Button-1>', self.save_file)
+        # lbl.pack(padx=6, pady=3)
 
         lbl = Label(frame1, relief='raised', image=self.clear)
         lbl.bind('<Button-1>', self.clear_canvas)
         lbl.pack(padx=6, pady=3)
 
-        spacer = Label(frame2)
-        spacer.pack(padx=6, pady=3)
-
-        lbl = Label(frame2, relief='raised', image=self.open)
-        lbl.bind('<Button-1>', self.open_file)
-        lbl.pack(padx=6, pady=3)
+        # spacer = Label(frame2)
+        # spacer.pack(padx=6, pady=3)
+        #
+        # lbl = Label(frame2, relief='raised', image=self.open)
+        # lbl.bind('<Button-1>', self.open_file)
+        # lbl.pack(padx=6, pady=3)
 
         frame1.pack(side='left', fill='y', pady=6)
         frame2.pack(side='left', fill='y', pady=6)
@@ -288,39 +288,76 @@ class Tool:
         self.custom.bind('<Button-1>', self.update_color)
         self._curr_color = self.custom
 
-    def save_file(self, event):
-        filename = filedialog.asksaveasfilename(initialdir="C:/",
-                                                title="Wybierz miejsce zapisu",
-                                                filetypes=(("jpeg files", "*.jpeg"), ("png files", "*.png"),
-                                                           ("gif files", "*.gif"), ("bmp files", "*.bmp")),
-                                                defaultextension="*.jpeg")
-        if not filename:
-            return
-        x1 = root.winfo_x() + 91
-        y1 = root.winfo_y() + 31
-        x2 = x1 + root.winfo_width()
-        y2 = y1 + root.winfo_height()
-        img = ImageGrab.grab(bbox=(x1, y1, x2, y2))
-        img.save(filename)
+    # def save_file(self, event):
+    #     filename = filedialog.asksaveasfilename(initialdir="C:/",
+    #                                             title="Wybierz miejsce zapisu",
+    #                                             filetypes=(("jpeg files", "*.jpeg"), ("png files", "*.png"),
+    #                                                        ("gif files", "*.gif"), ("bmp files", "*.bmp")),
+    #                                             defaultextension="*.jpeg")
+    #     if not filename:
+    #         return
+    #     x1 = root.winfo_x() + 91
+    #     y1 = root.winfo_y() + 31
+    #     x2 = x1 + root.winfo_width()
+    #     y2 = y1 + root.winfo_height()
+    #     img = ImageGrab.grab(bbox=(x1, y1, x2, y2))
+    #     img.save(filename)
+    #
+    # def open_file(self, event):
+    #     filename = filedialog.askopenfilename(initialdir="C:/",
+    #                                           title="Wybierz plik",
+    #                                           filetypes=(("jpeg files", "*.jpeg"), ("png files", "*.png"),
+    #                                                      ("gif files", "*.gif"), ("bmp files", "*.bmp")))
+    #     img_temp = Image.open(filename)
+    #     img_temp.save("temp.gif", "gif")
+    #     self.file_to_open = PhotoImage(file="temp.gif")
+    #     canvas.delete("all")
+    #     canvas.create_image(3, 3, image=self.file_to_open, anchor=NW)
 
-    def open_file(self, event):
-        filename = filedialog.askopenfilename(initialdir="C:/",
-                                                title="Wybierz plik",
-                                                filetypes=(("jpeg files", "*.jpeg"), ("png files", "*.png"),
-                                                           ("gif files", "*.gif"), ("bmp files", "*.bmp")))
-        img_temp = Image.open(filename)
-        img_temp.save("temp.gif", "gif")
-        self.file_to_open = PhotoImage(file = "temp.gif")
+    @staticmethod
+    def clear_canvas(event = None):
         canvas.delete("all")
-        canvas.create_image(3, 3, image=self.file_to_open, anchor=NW)
 
-    def clear_canvas(self, event):
-        canvas.delete("all")
+def save_file():
+    filename = filedialog.asksaveasfilename(initialdir="C:/",
+                                            title="Wybierz miejsce zapisu",
+                                            filetypes=(("jpeg files", "*.jpeg"), ("png files", "*.png"),
+                                                       ("gif files", "*.gif"), ("bmp files", "*.bmp")),
+                                            defaultextension="*.jpeg")
+    if not filename:
+        return
+    x1 = root.winfo_x() + 91
+    y1 = root.winfo_y() + 41
+    x2 = x1 + root.winfo_width()
+    y2 = y1 + root.winfo_height()
+    img = ImageGrab.grab(bbox=(x1, y1, x2, y2))
+    img.save(filename)
 
+def open_file():
+    filename = filedialog.askopenfilename(initialdir="C:/",
+                                          title="Wybierz plik",
+                                          filetypes=(("jpeg files", "*.jpeg"), ("png files", "*.png"),
+                                                     ("gif files", "*.gif"), ("bmp files", "*.bmp")))
+    img_temp = Image.open(filename)
+    img_temp.save("temp.gif", "gif")
+    Tool.file_to_open = PhotoImage(file="temp.gif")
+    canvas.delete("all")
+    canvas.create_image(3, 3, image=Tool.file_to_open, anchor=NW)
 
 root = Tk()
 root.geometry("900x640")
 root.title("Paint")
+
+menu_bar = Menu(root)
+file = Menu(menu_bar)
+file.add_command(label="Nowy", command=Tool.clear_canvas)
+file.add_command(label="Otwórz", command=open_file)
+file.add_command(label="Zapisz jako", command=save_file)
+file.add_separator()
+file.add_command(label="Wyjdź", command=root.quit)
+
+menu_bar.add_cascade(label="Plik", menu=file)
+root.config(menu=menu_bar)
 
 canvas = Canvas(background='white', width=800, height=600)
 whiteboard = Paint(canvas)
